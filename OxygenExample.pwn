@@ -12,7 +12,7 @@ new bool:oxstatus[MAX_PLAYERS];
 // Main
 public OnFilterScriptInit()
 {
-	SetTimer("ostatus", 500, true);
+	SetTimer("ostatus", 200, true);
 	return (true);
 }
 
@@ -20,26 +20,27 @@ public OnFilterScriptInit()
 public OnPlayerEnterInWater(playerid)
 {
 	SendClientMessage(playerid, -1, "WATER: Player enter in water");
-	return 1;
+	return (true);
 }
 
 public OnPlayerEnterUnderWater(playerid)
 {
 	SendClientMessage(playerid, -1, "WATER: Player enter under water");
-	return 1;
+	return (true);
 }
 
 public OnPlayerOutFromWater(playerid)
 {
 	SendClientMessage(playerid, -1, "WATER: Player out from water");
-	return 1;
+	return (true);
 }
-
 
 // Timer
 forward ostatus();
 public ostatus()
 {
+
+
 	new 
 		tdstring[128];
 
@@ -71,8 +72,8 @@ public ostatus()
 }
 
 
-
 // Commands
+
 CMD:status(playerid, params[])
 {
 	oxstatus[playerid] = !oxstatus[playerid];

@@ -12,7 +12,7 @@
 				Toribio / Southclaw 	(Progress Bar include)
 
 			Version:  	
-				v1.0 - beta
+				v1.1 - beta
 
 			Build: 		
 				1
@@ -24,8 +24,12 @@
 			============================
 					   Changes
 			============================
-			empty...
+			v1.0
+				Release
 
+			v1.1
+				Fixed bugs with health bar
+				Support last CA version
 
 
 
@@ -52,6 +56,7 @@
 
 
 			Status Definitions;
+			
 			OXYGEN_NONE
 			OXYGEN_SPENDING
 			OXYGEN_REFILL
@@ -119,6 +124,7 @@ new
 static 
 	Float:s_max[MAX_PLAYERS],
 	Float:s_hp[MAX_PLAYERS],
+	Float:s_rememberhp[MAX_PLAYERS],
 	bool:s_empty[MAX_PLAYERS],
 	bool:s_callin[MAX_PLAYERS],
 	bool:s_callun[MAX_PLAYERS],
@@ -351,6 +357,7 @@ public OnPlayerSpawn(playerid)
 {
 	SetPlayerHealth(playerid, 800000.0);
 	s_hp[playerid] = 100.0;
+	s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
   	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
 	UpdatePlayerHealth(playerid);	
@@ -424,6 +431,7 @@ stock s_GetPlayerHealth(playerid, &Float:health)
 stock SetPlayerHp(playerid, Float:amount)
 {
   	s_hp[playerid] = amount;
+  	UpdatePlayerHealth(playerid);
   	SetPlayerHealth(playerid, amount);
    	return (true);
 }
@@ -439,13 +447,24 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 {
 	if (s_callun[playerid] && !s_empty[playerid])
 	{
-		SetPlayerHealth(playerid, 8000000.0);
+		if (issuerid != INVALID_PLAYER_ID)
+		{
+			s_rememberhp[playerid] -= amount;
+		}
+
+		SetPlayerHp(playerid, 8000000.0);
+		s_hp[playerid] = s_rememberhp[playerid];
+		UpdatePlayerHealth(playerid);
 	}
 
-	if (!s_empty[playerid])
+	if (!s_empty[playerid] && s_callout[playerid])
 	{
-		s_hp[playerid] -= amount;
-		UpdatePlayerHealth(playerid);
+		if (issuerid == INVALID_PLAYER_ID)
+		{
+			s_rememberhp[playerid] -= amount;
+			s_hp[playerid] = s_rememberhp[playerid];
+			UpdatePlayerHealth(playerid);
+		}
 	}
 
 	if (s_callun[playerid] && s_empty[playerid])
@@ -472,6 +491,10 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 
 
 
+stock get(playerid)
+{
+	return _:s_rememberhp[playerid];
+}
 
 // Oxygen Main Timer
 forward _oxygen_timer();
@@ -521,61 +544,6 @@ public _oxygen_timer()
 
 
 // Functions for Include
-
-static IgnoreCordinates(Float:x, Float:y)
-{
-	if (IsPointInPolygon(x, y, //query
-		550.9355, 669.5078,
-		381.9896, 688.8492,
-		224.7769, 977.4635,
-		828.3624, 1133.6082,
-		960.1371, 732.2166
-	) || IsPointInPolygon(x, y, //farm bb
-	   	233.1112,50.4483,
-		228.0876,-281.2467,
-		-90.5534,-174.3824,
-		61.8390,136.3780
-	))
-	return (true);
-
-	return (false);
-}
-
-
-static IsPointInPolygon(Float: point_X, Float: point_Y, { Float, _ }: ...)
-{
-	#define MAX_POINTS (32)
-	
-	new
-		args_Total = numargs(),
-		polygon_Sides = (args_Total - 2) / 2
-	;
-	if ((args_Total - 2) & 0b1 || MAX_POINTS <= polygon_Sides || polygon_Sides < 3)
-		return (false);
-		
-	new
-		Float: polygon_Data[2][MAX_POINTS],
-		cross_Total
-	;
-	#undef MAX_POINTS
-	
-	for(new i = 2, j; i < args_Total; i += 2, ++j)
-	{
-		polygon_Data[0][j] = Float: getarg(i);
-		polygon_Data[1][j] = Float: getarg(i + 1);
-	}
-	for(new i, j = polygon_Sides - 1; i < polygon_Sides; j = i, ++i)
-	{
-		if (polygon_Data[1][i] < point_Y && polygon_Data[1][j] >= point_Y || polygon_Data[1][j] < point_Y && polygon_Data[1][i] >= point_Y)
-		{
-			if (polygon_Data[0][i] + (point_Y - polygon_Data[1][i]) / (polygon_Data[1][j] - polygon_Data[1][i]) * (polygon_Data[0][j] - polygon_Data[0][i]) < point_X)
-			{
-				cross_Total++;
-			}
-		}
-	}
-	return cross_Total & 0b1;	
-}
 
 static OxygenInit(playerid)
 {
@@ -636,6 +604,7 @@ static OxygenInit(playerid)
 
   	SetPlayerHealth(playerid, 800000.0);
 	s_hp[playerid] = 100.0;
+	s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
   	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
 	UpdatePlayerHealth(playerid);	
@@ -710,10 +679,7 @@ stock IsPlayerInWater(playerid)
 		{
 		    if (modelids[i] == WATER_OBJECT)
 		    {
-		    	if (IgnoreCordinates(x, y))
-		    		return (false);
-		    	else
-		    		return (true);
+		    	return (true);
 		    }
 		}
 	}
@@ -733,10 +699,7 @@ stock IsPlayerUnderWater(playerid)
 		{
 		    if (modelids[i] == WATER_OBJECT)
 		    {
-		    	if (IgnoreCordinates(x, y))
-		    		return (false);
-		    	else
-		    		return (true);
+		    	return (true);
 		    }
 		}
 	}

@@ -1,65 +1,70 @@
 /*
+	__________________________________
 
-			=============================
-				Oxygen Controller v1.0
-			=============================
-			Created by: 
-				Ino
+	        Oxygen Controller      
 
-			Credits:	
-				Pottus 					(ColAndreas plugin)
-				Slice  					(SKY plugin)
-				Toribio / Southclaw 	(Progress Bar include)
-
-			Version:  	
-				v1.1 - beta
-
-			Build: 		
-				1
-
-			Date: 		
-				02/05/2016
+	   Real SAMP Oxygen Controller
+	__________________________________
 
 
-			============================
-					   Changes
-			============================
-			v1.0
-				Release
+	
+	***** -> Created by <- *****
+		Ino
 
-			v1.1
-				Fixed bugs with health bar
-				Support last CA version
+	***** -> Credits <- *****	
+		ColAndreas Team			(ColAndreas plugin)
+		Slice  					(SKY plugin)
+		Toribio / Southclaw 	(Progress Bar include)
 
+	***** -> Version <- ***** 	
+		v1.1 - beta
 
+	***** -> Build <- *****		
+		3
 
-
-			Callbacks List;
-
-			OnPlayerEnterInWater(playerid);
-			OnPlayerEnterUnderWater(playerid);
-			OnPlayerOutFromWater(playerid);
+	***** -> Released  Date <- ***** 		
+			   02/05/2016
 
 
 			
-			Functions List;
+	***** -> Changes <- *****
 
-			IsPlayerInWater(playerid);
-			IsPlayerUnderWater(playerid);
-			SetPlayerOxygenValue(playerid, Float:Value);
-			GetPlayerOxygenValue(playerid);
-			SetPlayerMaxOxygenValue(playerid, Float:Value);
-			GetPlayerMaxOxygenValue(playerid);
-			GivePlayerOxygenValue(playerid, Float:Value);
-			GetPlayerOxygenStatus(playerid);
+		* -> v1.0
+		     Release
+
+		* -> v1.1
+		     Fixed bugs with health bar
+		     Support last CA version
 
 
 
-			Status Definitions;
+
+	***** -> Callbacks <- *****
+
+		OnPlayerEnterInWater(playerid);
+		OnPlayerEnterUnderWater(playerid);
+		OnPlayerOutFromWater(playerid);
+
+
 			
-			OXYGEN_NONE
-			OXYGEN_SPENDING
-			OXYGEN_REFILL
+	***** -> Functions <- *****
+
+		IsPlayerInWater(playerid);
+		IsPlayerUnderWater(playerid);
+		SetPlayerOxygenValue(playerid, Float:Value);
+		GetPlayerOxygenValue(playerid);
+		SetPlayerMaxOxygenValue(playerid, Float:Value);
+		GetPlayerMaxOxygenValue(playerid);
+		GivePlayerOxygenValue(playerid, Float:Value);
+		GetPlayerOxygenStatus(playerid);
+
+
+
+	***** -> Status Definitions <- *****
+			
+		OXYGEN_NONE
+		OXYGEN_SPENDING
+		OXYGEN_REFILL
 
 */
 
@@ -109,18 +114,15 @@
 //#define PRINT_DEBUG
 
 // Variables
-// Intiger
-new 
-	s_status[MAX_PLAYERS]; 
 
 // Textdraws
-new 
+static 
 	PlayerBar:s_hpbar[MAX_PLAYERS],
 	PlayerText:s_hpbcg[MAX_PLAYERS],
 	PlayerBar:s_bar[MAX_PLAYERS],
 	PlayerText:s_barbcg[MAX_PLAYERS];
 
-// Static - Floats / Bools
+// Floats / Bools
 static 
 	Float:s_max[MAX_PLAYERS],
 	Float:s_hp[MAX_PLAYERS],
@@ -130,6 +132,8 @@ static
 	bool:s_callun[MAX_PLAYERS],
 	bool:s_callout[MAX_PLAYERS],
 	bool:s_death[MAX_PLAYERS];
+
+static s_status[MAX_PLAYERS];
 
 
 // Callbacks
@@ -150,22 +154,13 @@ public OnFilterScriptInit()
 
 	print("loaded from filterscript");
 
-	#if defined ppb_OnFilterScriptInit
-		return ppb_OnFilterScriptInit();
+	#if defined oc_OnFilterScriptInit
+		return oc_OnFilterScriptInit();
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnFilterScriptInit
-	#undef OnFilterScriptInit
-#else
-	#define _ALS_OnFilterScriptInit
-#endif
- 
-#define OnFilterScriptInit ppb_OnFilterScriptInit
-#if defined ppb_OnFilterScriptInit
-	forward ppb_OnFilterScriptInit();
-#endif
+
 
 
 public OnGameModeInit()
@@ -179,22 +174,13 @@ public OnGameModeInit()
 
 	print("loaded from gamemode");
 
-	#if defined ppb_OnGameModeInit
-		return ppb_OnGameModeInit();
+	#if defined oc_OnGameModeInit
+		return oc_OnGameModeInit();
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnGameModeInit
-	#undef OnGameModeInit
-#else
-	#define _ALS_OnGameModeInit
-#endif
- 
-#define OnGameModeInit ppb_OnGameModeInit
-#if defined ppb_OnGameModeInit
-	forward ppb_OnGameModeInit();
-#endif
+
 
 
 public OnFilterScriptExit()
@@ -206,22 +192,13 @@ public OnFilterScriptExit()
 
 	print("unloaded from filterscript");
 
-	#if defined ppb_OnFilterScriptExit
-		return ppb_OnFilterScriptExit();
+	#if defined oc_OnFilterScriptExit
+		return oc_OnFilterScriptExit();
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnFilterScriptExit
-	#undef OnFilterScriptExit
-#else
-	#define _ALS_OnFilterScriptExit
-#endif
- 
-#define OnFilterScriptExit ppb_OnFilterScriptExit
-#if defined ppb_OnFilterScriptExit
-	forward ppb_OnFilterScriptExit();
-#endif
+
 
 
 public OnGameModeExit()
@@ -233,22 +210,13 @@ public OnGameModeExit()
 
 	print("unloaded from gamemode");
 
-	#if defined ppb_OnGameModeExit
-		return ppb_OnGameModeExit();
+	#if defined oc_OnGameModeExit
+		return oc_OnGameModeExit();
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnGameModeExit
-	#undef OnGameModeExit
-#else
-	#define _ALS_OnGameModeExit
-#endif
- 
-#define OnGameModeExit ppb_OnGameModeExit
-#if defined ppb_OnGameModeExit
-	forward ppb_OnGameModeExit();
-#endif
+
 
 
 public OnPlayerConnect(playerid)
@@ -257,22 +225,13 @@ public OnPlayerConnect(playerid)
 	OxygenInit(playerid);
 
 
-	#if defined ppb_OnPlayerConnect
-		return ppb_OnPlayerConnect(playerid);
+	#if defined oc_OnPlayerConnect
+		return oc_OnPlayerConnect(playerid);
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnPlayerConnect
-	#undef OnPlayerConnect
-#else
-	#define _ALS_OnPlayerConnect
-#endif
- 
-#define OnPlayerConnect ppb_OnPlayerConnect
-#if defined ppb_OnPlayerConnect
-	forward ppb_OnPlayerConnect(playerid);
-#endif
+
 
 
 public OnPlayerDisconnect(playerid, reason)
@@ -281,22 +240,13 @@ public OnPlayerDisconnect(playerid, reason)
 	OxygenExit(playerid);
 
 
-	#if defined ppb_OnPlayerDisconnect
-		return ppb_OnPlayerDisconnect(playerid, reason);
+	#if defined oc_OnPlayerDisconnect
+		return oc_OnPlayerDisconnect(playerid, reason);
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnPlayerDisconnect
-	#undef OnPlayerDisconnect
-#else
-	#define _ALS_OnPlayerDisconnect
-#endif
- 
-#define OnPlayerDisconnect ppb_OnPlayerDisconnect
-#if defined ppb_OnPlayerDisconnect
-	forward ppb_OnPlayerDisconnect(playerid, reason);
-#endif
+
 
 
 public OnPlayerUpdate(playerid)
@@ -335,22 +285,12 @@ public OnPlayerUpdate(playerid)
 	}
 
 
-#if defined ppb_OnPlayerUpdate
-		return ppb_OnPlayerUpdate(playerid);
+	#if defined oc_OnPlayerUpdate
+		return oc_OnPlayerUpdate(playerid);
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnPlayerUpdate
-	#undef OnPlayerUpdate
-#else
-	#define _ALS_OnPlayerUpdate
-#endif
- 
-#define OnPlayerUpdate ppb_OnPlayerUpdate
-#if defined ppb_OnPlayerUpdate
-	forward ppb_OnPlayerUpdate(playerid);
-#endif
 
 
 public OnPlayerSpawn(playerid)
@@ -371,22 +311,12 @@ public OnPlayerSpawn(playerid)
   	s_death[playerid] = false;
 
 
-	#if defined ppb_OnPlayerSpawn
-		return ppb_OnPlayerSpawn(playerid);
+	#if defined oc_OnPlayerSpawn
+		return oc_OnPlayerSpawn(playerid);
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnPlayerSpawn
-	#undef OnPlayerSpawn
-#else
-	#define _ALS_OnPlayerSpawn
-#endif
- 
-#define OnPlayerSpawn ppb_OnPlayerSpawn
-#if defined ppb_OnPlayerSpawn
-	forward ppb_OnPlayerSpawn(playerid);
-#endif
 
 
 public OnPlayerDeath(playerid, killerid, reason)
@@ -395,53 +325,13 @@ public OnPlayerDeath(playerid, killerid, reason)
 	UpdatePlayerHealth(playerid);
 	s_death[playerid] = true;
 
-	#if defined ppb_OnPlayerDeath
-		return ppb_OnPlayerDeath(playerid, killerid, reason);
+	#if defined oc_OnPlayerDeath
+		return oc_OnPlayerDeath(playerid, killerid, reason);
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnPlayerDeath
-	#undef OnPlayerDeath
-#else
-	#define _ALS_OnPlayerDeath
-#endif
- 
-#define OnPlayerDeath ppb_OnPlayerDeath
-#if defined ppb_OnPlayerDeath
-	forward ppb_OnPlayerDeath(playerid, killerid, reason);
-#endif
 
-
-// Hooked Functions
-
-stock s_GetPlayerHealth(playerid, &Float:health)
-{
-	health = s_hp[playerid];
-	return (true);
-}
- 
-#if defined _ALS_GetPlayerHealth
-		#undef GetPlayerHealth
-#else
-		#define _ALS_GetPlayerHealth
-#endif
-#define GetPlayerHealth s_GetPlayerHealth
-
-stock SetPlayerHp(playerid, Float:amount)
-{
-  	s_hp[playerid] = amount;
-  	UpdatePlayerHealth(playerid);
-  	SetPlayerHealth(playerid, amount);
-   	return (true);
-}
-
-#if defined _ALS_SetPlayerHealth
-	#undef SetPlayerHealth
-#else
-#define _ALS_SetPlayerHealth
-#endif
-#define SetPlayerHealth SetPlayerHp
 
 public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 {
@@ -452,7 +342,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 			s_rememberhp[playerid] -= amount;
 		}
 
-		SetPlayerHp(playerid, 8000000.0);
+		oc_SetPlayerHealth(playerid, 8000000.0);
 		s_hp[playerid] = s_rememberhp[playerid];
 		UpdatePlayerHealth(playerid);
 	}
@@ -472,29 +362,30 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 		SetPlayerHealth(playerid, s_hp[playerid]);
 	}
 
-	#if defined ppb_OnPlayerTakeDamage
-		return ppb_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
+	#if defined oc_OnPlayerTakeDamage
+		return oc_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
 	#else
 		return (true);
 	#endif
 }
-#if defined _ALS_OnPlayerTakeDamage
-	#undef OnPlayerTakeDamage
-#else
-	#define _ALS_OnPlayerTakeDamage
-#endif
- 
-#define OnPlayerTakeDamage ppb_OnPlayerTakeDamage
-#if defined ppb_OnPlayerTakeDamage
-	forward ppb_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
-#endif
 
+// Hooked Functions
 
-
-stock get(playerid)
+stock oc_GetPlayerHealth(playerid, &Float:health)
 {
-	return _:s_rememberhp[playerid];
+	health = s_hp[playerid];
+	return (true);
 }
+
+
+stock oc_SetPlayerHealth(playerid, Float:amount)
+{
+  	s_hp[playerid] = amount;
+  	UpdatePlayerHealth(playerid);
+  	SetPlayerHealth(playerid, amount);
+   	return (true);
+}
+
 
 // Oxygen Main Timer
 forward _oxygen_timer();
@@ -626,7 +517,7 @@ static OxygenExit(playerid)
 	return (true);
 }
 
-stock UpdatePlayerHealth(playerid)
+static UpdatePlayerHealth(playerid)
 {
 	SetFakeHealth(playerid, (floatround(s_hp[playerid], floatround_ceil)));
 	UpdatePlayerSyncData(playerid);
@@ -650,7 +541,7 @@ stock UpdatePlayerHealth(playerid)
 }
 
 // by Slice
-stock UpdatePlayerSyncData(playerid)
+static UpdatePlayerSyncData(playerid)
 {
 	// Currently re-sending onfoot data is only supported
 	if (!IsPlayerConnected(playerid) || GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) {
@@ -772,3 +663,168 @@ stock GetPlayerOxygenStatus(playerid)
 {
 	return s_status[playerid];
 }
+
+
+// ALS callbacks
+
+
+// OnPlayerTakeDamage
+#if defined _ALS_OnPlayerTakeDamage
+	#undef OnPlayerTakeDamage
+#else
+	#define _ALS_OnPlayerTakeDamage
+#endif
+ 
+#define OnPlayerTakeDamage oc_OnPlayerTakeDamage
+#if defined oc_OnPlayerTakeDamage
+	forward oc_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
+#endif
+
+
+
+// OnPlayerUpdate
+#if defined _ALS_OnPlayerUpdate
+	#undef OnPlayerUpdate
+#else
+	#define _ALS_OnPlayerUpdate
+#endif
+ 
+#define OnPlayerUpdate oc_OnPlayerUpdate
+#if defined oc_OnPlayerUpdate
+	forward oc_OnPlayerUpdate(playerid);
+#endif
+
+
+
+// OnPlayerDeath
+#if defined _ALS_OnPlayerDeath
+	#undef OnPlayerDeath
+#else
+	#define _ALS_OnPlayerDeath
+#endif
+ 
+#define OnPlayerDeath oc_OnPlayerDeath
+#if defined oc_OnPlayerDeath
+	forward oc_OnPlayerDeath(playerid, killerid, reason);
+#endif
+
+
+
+// OnPlayerSpawn
+#if defined _ALS_OnPlayerSpawn
+	#undef OnPlayerSpawn
+#else
+	#define _ALS_OnPlayerSpawn
+#endif
+ 
+#define OnPlayerSpawn oc_OnPlayerSpawn
+#if defined oc_OnPlayerSpawn
+	forward oc_OnPlayerSpawn(playerid);
+#endif
+
+
+
+// OnPlayerDisconnect
+#if defined _ALS_OnPlayerDisconnect
+	#undef OnPlayerDisconnect
+#else
+	#define _ALS_OnPlayerDisconnect
+#endif
+ 
+#define OnPlayerDisconnect oc_OnPlayerDisconnect
+#if defined oc_OnPlayerDisconnect
+	forward oc_OnPlayerDisconnect(playerid, reason);
+#endif
+
+
+
+// OnPlayerConnect
+#if defined _ALS_OnPlayerConnect
+	#undef OnPlayerConnect
+#else
+	#define _ALS_OnPlayerConnect
+#endif
+ 
+#define OnPlayerConnect oc_OnPlayerConnect
+#if defined oc_OnPlayerConnect
+	forward oc_OnPlayerConnect(playerid);
+#endif
+
+
+
+// OnGameModeExit
+#if defined _ALS_OnGameModeExit
+	#undef OnGameModeExit
+#else
+	#define _ALS_OnGameModeExit
+#endif
+ 
+#define OnGameModeExit oc_OnGameModeExit
+#if defined oc_OnGameModeExit
+	forward oc_OnGameModeExit();
+#endif
+
+
+
+// OnFilterScriptExit
+#if defined _ALS_OnFilterScriptExit
+	#undef OnFilterScriptExit
+#else
+	#define _ALS_OnFilterScriptExit
+#endif
+ 
+#define OnFilterScriptExit oc_OnFilterScriptExit
+#if defined oc_OnFilterScriptExit
+	forward oc_OnFilterScriptExit();
+#endif
+
+
+
+// OnGameModeInit
+#if defined _ALS_OnGameModeInit
+	#undef OnGameModeInit
+#else
+	#define _ALS_OnGameModeInit
+#endif
+ 
+#define OnGameModeInit oc_OnGameModeInit
+#if defined oc_OnGameModeInit
+	forward oc_OnGameModeInit();
+#endif
+
+
+
+// OnFilterScriptInit
+#if defined _ALS_OnFilterScriptInit
+	#undef OnFilterScriptInit
+#else
+	#define _ALS_OnFilterScriptInit
+#endif
+ 
+#define OnFilterScriptInit oc_OnFilterScriptInit
+#if defined oc_OnFilterScriptInit
+	forward oc_OnFilterScriptInit();
+#endif
+
+
+// --------------------------------------------
+// ALS Functions
+
+
+// GetPlayerHealth
+#if defined _ALoc_GetPlayerHealth
+		#undef GetPlayerHealth
+#else
+		#define _ALoc_GetPlayerHealth
+#endif
+#define GetPlayerHealth oc_GetPlayerHealth
+
+
+
+// SetPlayerHealth
+#if defined _ALS_SetPlayerHealth
+	#undef SetPlayerHealth
+#else
+#define _ALS_SetPlayerHealth
+#endif
+#define SetPlayerHealth oc_SetPlayerHealth

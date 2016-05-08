@@ -120,7 +120,8 @@ static s_status[MAX_PLAYERS];
 
 static
 	s_timer_name[] = !"_oxygen_timer",
-	s_format_i[] = !"i";
+	s_format_i[] = !"i",
+	s_td_msg[] = "_";
 
 
 // Callbacks
@@ -487,7 +488,7 @@ public _oxygen_timer()
 
 static OxygenInit(playerid)
 {
-	s_barbcg[playerid] = CreatePlayerTextDraw(playerid,609.000000, 58.000000, "_");
+	s_barbcg[playerid] = CreatePlayerTextDraw(playerid,609.000000, 58.000000, s_td_msg);
 	PlayerTextDrawBackgroundColor(playerid,s_barbcg[playerid], 255);
 	PlayerTextDrawFont(playerid,s_barbcg[playerid], 1);
 	PlayerTextDrawLetterSize(playerid,s_barbcg[playerid], 0.500000, 0.599999);
@@ -500,7 +501,7 @@ static OxygenInit(playerid)
 	PlayerTextDrawTextSize(playerid,s_barbcg[playerid], 544.500000, 1.000000);
 	PlayerTextDrawSetSelectable(playerid,s_barbcg[playerid], 0);
 
-	s_hpbcg[playerid] = CreatePlayerTextDraw(playerid,609.000000, 68.550000, "_");
+	s_hpbcg[playerid] = CreatePlayerTextDraw(playerid,609.000000, 68.550000, s_td_msg);
 	PlayerTextDrawBackgroundColor(playerid,s_hpbcg[playerid], 255);
 	PlayerTextDrawFont(playerid,s_hpbcg[playerid], 1);
 	PlayerTextDrawLetterSize(playerid,s_hpbcg[playerid], 0.500000, 0.599999);
@@ -542,8 +543,7 @@ static OxygenInit(playerid)
 	//
 
 	SetPlayerHealth(playerid, 800000.0);
-	s_hp[playerid] = 100.0;
-	s_rememberhp[playerid] = 100.0;
+	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
 	UpdatePlayerHealth(playerid);

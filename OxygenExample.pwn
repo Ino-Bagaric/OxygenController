@@ -1,4 +1,7 @@
 #include <a_samp>
+
+// if you have include foreach in your include folder, use define _foreach
+//#define _foreach
 #include <OxygenController>
 #include <zcmd>
 
@@ -39,8 +42,6 @@ public OnPlayerOutFromWater(playerid)
 forward ostatus();
 public ostatus()
 {
-
-
 	new 
 		tdstring[128];
 

@@ -1,54 +1,34 @@
 /*
 	__________________________________
-
 	        Oxygen Controller      
-
 	   Real SAMP Oxygen Controller
 	__________________________________
-
-
 	
 	***** -> Created by <- *****
 		Ino
-
 	***** -> Credits <- *****	
 		ColAndreas Team			(ColAndreas plugin)
 		Slice  					(SKY plugin)
 		Toribio / Southclaw 	(Progress Bar include)
-
 	***** -> Version <- ***** 	
 		v1.1 - beta
-
 	***** -> Build <- *****		
 		3
-
 	***** -> Released  Date <- ***** 		
 			   02/05/2016
-
-
 			
 	***** -> Changes <- *****
-
 		* -> v1.0
 		     Release
-
 		* -> v1.1
 		     Fixed bugs with health bar
 		     Support last CA version
-
-
-
-
 	***** -> Callbacks <- *****
-
 		OnPlayerEnterInWater(playerid);
 		OnPlayerEnterUnderWater(playerid);
 		OnPlayerOutFromWater(playerid);
-
-
 			
 	***** -> Functions <- *****
-
 		IsPlayerInWater(playerid);
 		IsPlayerUnderWater(playerid);
 		SetPlayerOxygenValue(playerid, Float:Value);
@@ -57,19 +37,18 @@
 		GetPlayerMaxOxygenValue(playerid);
 		GivePlayerOxygenValue(playerid, Float:Value);
 		GetPlayerOxygenStatus(playerid);
-
-
-
 	***** -> Status Definitions <- *****
 			
 		OXYGEN_NONE
 		OXYGEN_SPENDING
 		OXYGEN_REFILL
-
 */
 
 
 #include <a_samp>
+
+#if defined _foreach
+	#include <foreach>
 
 #if defined _INC_OXYGEN
 	#endinput
@@ -145,7 +124,7 @@ forward OnPlayerOutFromWater(playerid);
 // Hooked Callbacks
 public OnFilterScriptInit()
 {
-#if defined foreach
+#if defined _foreach
 	foreach (new i: Player)
 #else
 	for(
@@ -177,7 +156,7 @@ public OnFilterScriptInit()
 
 public OnGameModeInit()
 {
-#if defined foreach
+#if defined _foreach
 	foreach (new i: Player)
 #else
 	for(
@@ -227,7 +206,7 @@ public OnFilterScriptExit()
 
 public OnGameModeExit()
 {
-#if defined foreach
+#if defined _foreach
 	foreach (new i: Player)
 #else
 	for(
@@ -427,7 +406,7 @@ stock oc_SetPlayerHealth(playerid, Float:amount)
 forward _oxygen_timer();
 public _oxygen_timer()
 {
-#if defined foreach
+#if defined _foreach
 	foreach (new i: Player)
 #else
 	for(

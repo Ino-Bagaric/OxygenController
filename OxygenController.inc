@@ -47,8 +47,11 @@
 
 #include <a_samp>
 
-#if defined _foreach
-	#include <foreach>
+#if defined _foreach && !defined foreach
+	#tryinclude <foreach>
+	#if !defined foreach
+		#undef _foreach
+	#endif
 #endif
 
 #if defined _INC_OXYGEN

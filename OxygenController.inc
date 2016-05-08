@@ -103,12 +103,12 @@
 
 // Defines
 #define MAX_OXYGEN      (5000.00)
-#define MIN_OXYGEN 		(100.00)
+#define MIN_OXYGEN      (100.00)
 
 // Defined status
-#define OXYGEN_NONE		(0000)
-#define OXYGEN_SPENDING	(0001)
-#define OXYGEN_REFILL	(0002)
+#define OXYGEN_NONE     (0000)
+#define OXYGEN_SPENDING (0001)
+#define OXYGEN_REFILL   (0002)
 
 // Debug (in progress)
 //#define PRINT_DEBUG

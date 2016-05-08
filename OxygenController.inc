@@ -103,12 +103,12 @@
 
 // Defines
 #define MAX_OXYGEN      (5000.00)
-#define MIN_OXYGEN 		(100.00)
+#define MIN_OXYGEN      (100.00)
 
 // Defined status
-#define OXYGEN_NONE		(0000)
-#define OXYGEN_SPENDING	(0001)
-#define OXYGEN_REFILL	(0002)
+#define OXYGEN_NONE     (0000)
+#define OXYGEN_SPENDING (0001)
+#define OXYGEN_REFILL   (0002)
 
 // Debug (in progress)
 //#define PRINT_DEBUG
@@ -145,7 +145,19 @@ forward OnPlayerOutFromWater(playerid);
 // Hooked Callbacks
 public OnFilterScriptInit()
 {
-	for (new i = 0; i < MAX_PLAYERS; i++)
+#if defined foreach
+	foreach (new i: Player)
+#else
+	for(
+		new i
+	#if defined GetPlayerPoolSize
+		= GetPlayerPoolSize() + 1
+	#else
+		= GetMaxPlayers()
+	#endif
+		; --i != -1;
+		)
+#endif
 	{
 		OxygenInit(i);
 	}
@@ -165,7 +177,19 @@ public OnFilterScriptInit()
 
 public OnGameModeInit()
 {
-	for (new i = 0; i < MAX_PLAYERS; i++)
+#if defined foreach
+	foreach (new i: Player)
+#else
+	for(
+		new i
+	#if defined GetPlayerPoolSize
+		= GetPlayerPoolSize() + 1
+	#else
+		= GetMaxPlayers()
+	#endif
+		; --i != -1;
+		)
+#endif
 	{
 		OxygenInit(i);
 	}
@@ -203,7 +227,19 @@ public OnFilterScriptExit()
 
 public OnGameModeExit()
 {
-	for (new i = 0; i < MAX_PLAYERS; i++)
+#if defined foreach
+	foreach (new i: Player)
+#else
+	for(
+		new i
+	#if defined GetPlayerPoolSize
+		= GetPlayerPoolSize() + 1
+	#else
+		= GetMaxPlayers()
+	#endif
+		; --i != -1;
+		)
+#endif
 	{
 		OxygenExit(i);
 	}
@@ -299,16 +335,16 @@ public OnPlayerSpawn(playerid)
 	s_hp[playerid] = 100.0;
 	s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
-  	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
+	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
 	UpdatePlayerHealth(playerid);	
 
 	s_empty[playerid] = false;
 	SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], s_max[playerid]);
-  	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
-  	HidePlayerProgressBar(playerid, s_bar[playerid]);
-  	s_status[playerid] = OXYGEN_NONE;
+	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
+	HidePlayerProgressBar(playerid, s_bar[playerid]);
+	s_status[playerid] = OXYGEN_NONE;
 
-  	s_death[playerid] = false;
+	s_death[playerid] = false;
 
 
 	#if defined oc_OnPlayerSpawn
@@ -380,10 +416,10 @@ stock oc_GetPlayerHealth(playerid, &Float:health)
 
 stock oc_SetPlayerHealth(playerid, Float:amount)
 {
-  	s_hp[playerid] = amount;
-  	UpdatePlayerHealth(playerid);
-  	SetPlayerHealth(playerid, amount);
-   	return (true);
+	s_hp[playerid] = amount;
+	UpdatePlayerHealth(playerid);
+	SetPlayerHealth(playerid, amount);
+	return (true);
 }
 
 
@@ -391,8 +427,19 @@ stock oc_SetPlayerHealth(playerid, Float:amount)
 forward _oxygen_timer();
 public _oxygen_timer()
 {
-	
-	for(new i; i < MAX_PLAYERS; i++)
+#if defined foreach
+	foreach (new i: Player)
+#else
+	for(
+		new i
+	#if defined GetPlayerPoolSize
+		= GetPlayerPoolSize() + 1
+	#else
+		= GetMaxPlayers()
+	#endif
+		; --i != -1;
+		)
+#endif
 	{
 		if (s_callun[i])
 		{
@@ -404,8 +451,8 @@ public _oxygen_timer()
 		if (!s_callun[i] && GetPlayerProgressBarValue(i, s_bar[i]) < GetPlayerProgressBarMaxValue(i, s_bar[i]))
 		{
 			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i])+0.40));
-		    PlayerTextDrawShow(i, s_barbcg[i]);
-		    s_status[i] = OXYGEN_REFILL;
+			PlayerTextDrawShow(i, s_barbcg[i]);
+			s_status[i] = OXYGEN_REFILL;
 		}
 
 		if (GetPlayerProgressBarValue(i, s_bar[i]) >= GetPlayerProgressBarMaxValue(i, s_bar[i]))
@@ -426,7 +473,7 @@ public _oxygen_timer()
 		}
 		else
 		{
-		    s_empty[i] = false;
+			s_empty[i] = false;
 		}
 
 	}
@@ -469,14 +516,14 @@ static OxygenInit(playerid)
 	DestroyPlayerProgressBar(playerid, s_bar[playerid]);
 
 
-    s_bar[playerid] = CreatePlayerProgressBar(playerid, 548.50, 58.00, 61.00, 4.80, 2899046911, 100.0, BAR_DIRECTION_RIGHT);
-    SetPlayerProgressBarValue(playerid, s_bar[playerid], 100.0);
-    s_max[playerid] = 100.0;
+	s_bar[playerid] = CreatePlayerProgressBar(playerid, 548.50, 58.00, 61.00, 4.80, 2899046911, 100.0, BAR_DIRECTION_RIGHT);
+	SetPlayerProgressBarValue(playerid, s_bar[playerid], 100.0);
+	s_max[playerid] = 100.0;
 	PlayerTextDrawHide(playerid, s_barbcg[playerid]);
 
-	
-    s_hpbar[playerid] = CreatePlayerProgressBar(playerid, 548.50, 68.55, 61.00, 4.80, 3021544959, 100.0, BAR_DIRECTION_RIGHT);
-    SetPlayerProgressBarValue(playerid, s_hpbar[playerid], 100.0);
+
+	s_hpbar[playerid] = CreatePlayerProgressBar(playerid, 548.50, 68.55, 61.00, 4.80, 3021544959, 100.0, BAR_DIRECTION_RIGHT);
+	SetPlayerProgressBarValue(playerid, s_hpbar[playerid], 100.0);
 	PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
 
 
@@ -485,26 +532,26 @@ static OxygenInit(playerid)
 	s_callun[playerid] = false;
 
 	HidePlayerProgressBar(playerid, s_hpbar[playerid]);
-  	PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
+	PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
 
-  	HidePlayerProgressBar(playerid, s_bar[playerid]);
-  	PlayerTextDrawHide(playerid, s_barbcg[playerid]);
+	HidePlayerProgressBar(playerid, s_bar[playerid]);
+	PlayerTextDrawHide(playerid, s_barbcg[playerid]);
 
 
-  	//
+	//
 
-  	SetPlayerHealth(playerid, 800000.0);
+	SetPlayerHealth(playerid, 800000.0);
 	s_hp[playerid] = 100.0;
 	s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
-  	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
+	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
 	UpdatePlayerHealth(playerid);	
 
 	s_empty[playerid] = false;
 	SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], s_max[playerid]);
-  	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
-  	HidePlayerProgressBar(playerid, s_bar[playerid]);
-  	s_status[playerid] = OXYGEN_NONE;
+	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
+	HidePlayerProgressBar(playerid, s_bar[playerid]);
+	s_status[playerid] = OXYGEN_NONE;
 	return (true);
 }
 
@@ -535,7 +582,7 @@ static UpdatePlayerHealth(playerid)
 	else
 	{
 		HidePlayerProgressBar(playerid, s_hpbar[playerid]);
-  		PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
+		PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
 	}
 	return (true);
 }
@@ -568,10 +615,10 @@ stock IsPlayerInWater(playerid)
 	{
 		for(new i = 0; i < collisions; i++)
 		{
-		    if (modelids[i] == WATER_OBJECT)
-		    {
-		    	return (true);
-		    }
+			if (modelids[i] == WATER_OBJECT)
+			{
+				return (true);
+			}
 		}
 	}
 	return (false);
@@ -588,10 +635,10 @@ stock IsPlayerUnderWater(playerid)
 	{
 		for(new i = 0; i < collisions; i++)
 		{
-		    if (modelids[i] == WATER_OBJECT)
-		    {
-		    	return (true);
-		    }
+			if (modelids[i] == WATER_OBJECT)
+			{
+				return (true);
+			}
 		}
 	}
 	return (false);
@@ -610,18 +657,18 @@ stock SetPlayerOxygenValue(playerid, Float:Value)
 
 	if (Value > s_max[playerid])
 	{
-	    SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
+		SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
 	}
 	else
 	{
-        SetPlayerProgressBarValue(playerid, s_bar[playerid], Value);
+		SetPlayerProgressBarValue(playerid, s_bar[playerid], Value);
 	}
 	return (true);
 }
 
 stock GetPlayerMaxOxygenValue(playerid)
 {
-    new Float:Value = s_max[playerid];
+	new Float:Value = s_max[playerid];
 	return _:Value;
 }
 
@@ -632,13 +679,13 @@ stock SetPlayerMaxOxygenValue(playerid, Float:Value)
 
 	if (Value > MAX_OXYGEN)
 	{
-	    SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], MAX_OXYGEN);
-    	s_max[playerid] = GetPlayerProgressBarMaxValue(playerid, s_bar[playerid]);
+		SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], MAX_OXYGEN);
+		s_max[playerid] = GetPlayerProgressBarMaxValue(playerid, s_bar[playerid]);
 	}
 	else
 	{
-        SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], Value);
-    	s_max[playerid] = GetPlayerProgressBarMaxValue(playerid, s_bar[playerid]);
+		SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], Value);
+		s_max[playerid] = GetPlayerProgressBarMaxValue(playerid, s_bar[playerid]);
 	}
 	return (true);
 }
@@ -650,11 +697,11 @@ stock GivePlayerOxygenValue(playerid, Float:Value)
 
 	if ((GetPlayerProgressBarValue(playerid, s_bar[playerid])+Value) > s_max[playerid])
 	{
-	    SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
+		SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
 	}
 	else
 	{
-	    SetPlayerProgressBarValue(playerid, s_bar[playerid], (GetPlayerProgressBarValue(playerid, s_bar[playerid])+Value));
+		SetPlayerProgressBarValue(playerid, s_bar[playerid], (GetPlayerProgressBarValue(playerid, s_bar[playerid])+Value));
 	}
 	return (true);
 }
@@ -674,7 +721,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnPlayerTakeDamage
 #endif
- 
+
 #define OnPlayerTakeDamage oc_OnPlayerTakeDamage
 #if defined oc_OnPlayerTakeDamage
 	forward oc_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
@@ -688,7 +735,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnPlayerUpdate
 #endif
- 
+
 #define OnPlayerUpdate oc_OnPlayerUpdate
 #if defined oc_OnPlayerUpdate
 	forward oc_OnPlayerUpdate(playerid);
@@ -702,7 +749,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnPlayerDeath
 #endif
- 
+
 #define OnPlayerDeath oc_OnPlayerDeath
 #if defined oc_OnPlayerDeath
 	forward oc_OnPlayerDeath(playerid, killerid, reason);
@@ -716,7 +763,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnPlayerSpawn
 #endif
- 
+
 #define OnPlayerSpawn oc_OnPlayerSpawn
 #if defined oc_OnPlayerSpawn
 	forward oc_OnPlayerSpawn(playerid);
@@ -730,7 +777,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnPlayerDisconnect
 #endif
- 
+
 #define OnPlayerDisconnect oc_OnPlayerDisconnect
 #if defined oc_OnPlayerDisconnect
 	forward oc_OnPlayerDisconnect(playerid, reason);
@@ -758,7 +805,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnGameModeExit
 #endif
- 
+
 #define OnGameModeExit oc_OnGameModeExit
 #if defined oc_OnGameModeExit
 	forward oc_OnGameModeExit();
@@ -772,7 +819,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnFilterScriptExit
 #endif
- 
+
 #define OnFilterScriptExit oc_OnFilterScriptExit
 #if defined oc_OnFilterScriptExit
 	forward oc_OnFilterScriptExit();
@@ -786,7 +833,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnGameModeInit
 #endif
- 
+
 #define OnGameModeInit oc_OnGameModeInit
 #if defined oc_OnGameModeInit
 	forward oc_OnGameModeInit();
@@ -800,7 +847,7 @@ stock GetPlayerOxygenStatus(playerid)
 #else
 	#define _ALS_OnFilterScriptInit
 #endif
- 
+
 #define OnFilterScriptInit oc_OnFilterScriptInit
 #if defined oc_OnFilterScriptInit
 	forward oc_OnFilterScriptInit();

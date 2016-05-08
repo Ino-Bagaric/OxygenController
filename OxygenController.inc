@@ -48,7 +48,8 @@
 #include <a_samp>
 
 #if defined _foreach
-	#include <foreach>
+	#tryinclude <foreach>
+#endif
 
 #if defined _INC_OXYGEN
 	#endinput
@@ -114,6 +115,10 @@ static
 
 static s_status[MAX_PLAYERS];
 
+static
+	s_timer_name[] = !"_oxygen_timer",
+	s_format_i[] = !"i";
+
 
 // Callbacks
 forward OnPlayerEnterInWater(playerid);
@@ -141,9 +146,9 @@ public OnFilterScriptInit()
 		OxygenInit(i);
 	}
 
-	SetTimer("_oxygen_timer", 200, true);
+	SetTimer(s_timer_name, 200, true);
 
-	print("loaded from filterscript");
+	print(!"loaded from filterscript");
 
 	#if defined oc_OnFilterScriptInit
 		return oc_OnFilterScriptInit();
@@ -173,9 +178,9 @@ public OnGameModeInit()
 		OxygenInit(i);
 	}
 
-	SetTimer("_oxygen_timer", 200, true);
+	SetTimer(s_timer_name, 200, true);
 
-	print("loaded from gamemode");
+	print(!"loaded from gamemode");
 
 	#if defined oc_OnGameModeInit
 		return oc_OnGameModeInit();
@@ -188,12 +193,24 @@ public OnGameModeInit()
 
 public OnFilterScriptExit()
 {
-	for (new i = 0; i < MAX_PLAYERS; i++)
+#if defined _foreach
+	foreach (new i: Player)
+#else
+	for(
+		new i
+	#if defined GetPlayerPoolSize
+		= GetPlayerPoolSize() + 1
+	#else
+		= GetMaxPlayers()
+	#endif
+		; --i != -1;
+		)
+#endif
 	{
 		OxygenExit(i);
 	}
 
-	print("unloaded from filterscript");
+	print(!"unloaded from filterscript");
 
 	#if defined oc_OnFilterScriptExit
 		return oc_OnFilterScriptExit();
@@ -223,7 +240,7 @@ public OnGameModeExit()
 		OxygenExit(i);
 	}
 
-	print("unloaded from gamemode");
+	print(!"unloaded from gamemode");
 
 	#if defined oc_OnGameModeExit
 		return oc_OnGameModeExit();
@@ -266,36 +283,39 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerUpdate(playerid)
 {
-	if (!s_callin[playerid])
+	if (0 == s_callin[playerid])
 	{
 		if (IsPlayerInWater(playerid))
 		{
-			CallLocalFunction("OnPlayerEnterInWater", "i", playerid);
+		#if defined OnPlayerEnterInWater
+			CallLocalFunction(!"OnPlayerEnterInWater", s_format_i, playerid);
+		#endif
 			s_callin[playerid] = true;
-			s_callout[playerid] = false;
-			s_callun[playerid] = false;
+			s_callout[playerid] = s_callun[playerid] = false;
 		}
 	}
 
-	if (!s_callun[playerid])
+	if (0 == s_callun[playerid])
 	{
 		if (IsPlayerUnderWater(playerid))
 		{
-			CallLocalFunction("OnPlayerEnterUnderWater", "i", playerid);
+		#if defined OnPlayerEnterUnderWater
+			CallLocalFunction(!"OnPlayerEnterUnderWater", s_format_i, playerid);
+		#endif
 			s_callun[playerid] = true;
-			s_callout[playerid] = false;
-			s_callin[playerid] = false;
+			s_callout[playerid] = s_callin[playerid] = false;
 		}
 	}
 
-	if (!s_callout[playerid])
+	if (0 == s_callout[playerid])
 	{
-		if (!IsPlayerUnderWater(playerid) && !IsPlayerInWater(playerid))
+		if (0 == IsPlayerUnderWater(playerid) && 0 == IsPlayerInWater(playerid))
 		{
-			CallLocalFunction("OnPlayerOutFromWater", "i", playerid);
+		#if defined OnPlayerOutFromWater
+			CallLocalFunction(!"OnPlayerOutFromWater", s_format_i, playerid);
+		#endif
 			s_callout[playerid] = true;
-			s_callun[playerid] = false;
-			s_callin[playerid] = false;
+			s_callun[playerid] = s_callin[playerid] = false;
 		}
 	}
 
@@ -311,19 +331,17 @@ public OnPlayerUpdate(playerid)
 public OnPlayerSpawn(playerid)
 {
 	SetPlayerHealth(playerid, 800000.0);
-	s_hp[playerid] = 100.0;
-	s_rememberhp[playerid] = 100.0;
+	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
-	UpdatePlayerHealth(playerid);	
+	UpdatePlayerHealth(playerid);
 
-	s_empty[playerid] = false;
 	SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], s_max[playerid]);
 	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
 	HidePlayerProgressBar(playerid, s_bar[playerid]);
 	s_status[playerid] = OXYGEN_NONE;
 
-	s_death[playerid] = false;
+	s_empty[playerid] = s_death[playerid] = false;
 
 
 	#if defined oc_OnPlayerSpawn
@@ -350,7 +368,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 {
-	if (s_callun[playerid] && !s_empty[playerid])
+	if (s_callun[playerid] && 0 == s_empty[playerid])
 	{
 		if (issuerid != INVALID_PLAYER_ID)
 		{
@@ -362,7 +380,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 		UpdatePlayerHealth(playerid);
 	}
 
-	if (!s_empty[playerid] && s_callout[playerid])
+	if (0 == s_empty[playerid] && s_callout[playerid])
 	{
 		if (issuerid == INVALID_PLAYER_ID)
 		{
@@ -427,7 +445,7 @@ public _oxygen_timer()
 			s_status[i] = OXYGEN_SPENDING;
 		}
 
-		if (!s_callun[i] && GetPlayerProgressBarValue(i, s_bar[i]) < GetPlayerProgressBarMaxValue(i, s_bar[i]))
+		if (0 == s_callun[i] && GetPlayerProgressBarValue(i, s_bar[i]) < GetPlayerProgressBarMaxValue(i, s_bar[i]))
 		{
 			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i])+0.40));
 			PlayerTextDrawShow(i, s_barbcg[i]);
@@ -443,7 +461,7 @@ public _oxygen_timer()
 
 		if (GetPlayerProgressBarValue(i, s_bar[i]) <= 0.00)
 		{
-			if (!s_death[i])
+			if (0 == s_death[i])
 			{
 				s_empty[i] = true;
 				SetPlayerHealth(i, 0.0);
@@ -506,9 +524,8 @@ static OxygenInit(playerid)
 	PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
 
 
-	s_callin[playerid] = false;
 	s_callout[playerid] = true;
-	s_callun[playerid] = false;
+	s_callin[playerid] = s_callun[playerid] = false;
 
 	HidePlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
@@ -524,7 +541,7 @@ static OxygenInit(playerid)
 	s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
-	UpdatePlayerHealth(playerid);	
+	UpdatePlayerHealth(playerid);
 
 	s_empty[playerid] = false;
 	SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], s_max[playerid]);
@@ -554,7 +571,7 @@ static UpdatePlayerHealth(playerid)
 		SetPlayerProgressBarValue(playerid, s_hpbar[playerid], s_hp[playerid]);
 	}
 	
-	if (!s_empty[playerid])
+	if (0 == s_empty[playerid])
 	{
 		SetPlayerProgressBarValue(playerid, s_hpbar[playerid], s_hp[playerid]);
 	}
@@ -570,11 +587,24 @@ static UpdatePlayerHealth(playerid)
 static UpdatePlayerSyncData(playerid)
 {
 	// Currently re-sending onfoot data is only supported
-	if (!IsPlayerConnected(playerid) || GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) {
+	if (0 == IsPlayerConnected(playerid) || GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) {
 		return;
 	}
 
-	for (new i = 0; i < MAX_PLAYERS; i++) {
+#if defined _foreach
+	foreach (new i: Player)
+#else
+	for(
+		new i
+	#if defined GetPlayerPoolSize
+		= GetPlayerPoolSize() + 1
+	#else
+		= GetMaxPlayers()
+	#endif
+		; --i != -1;
+		)
+#endif
+	{
 		if (i != playerid && IsPlayerConnected(i) && IsPlayerStreamedIn(playerid, i)) {
 			SendLastSyncData(playerid, i);
 		}
@@ -625,8 +655,7 @@ stock IsPlayerUnderWater(playerid)
 
 stock GetPlayerOxygenValue(playerid)
 {
-    new Float:Value = GetPlayerProgressBarValue(playerid, s_bar[playerid]);
-	return _:Value;
+	return _:(GetPlayerProgressBarValue(playerid, s_bar[playerid]));
 }
 
 stock SetPlayerOxygenValue(playerid, Float:Value)
@@ -647,8 +676,7 @@ stock SetPlayerOxygenValue(playerid, Float:Value)
 
 stock GetPlayerMaxOxygenValue(playerid)
 {
-	new Float:Value = s_max[playerid];
-	return _:Value;
+	return _:(s_max[playerid]);
 }
 
 stock SetPlayerMaxOxygenValue(playerid, Float:Value)

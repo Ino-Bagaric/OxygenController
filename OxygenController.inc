@@ -48,7 +48,7 @@
 #include <a_samp>
 
 #if defined _foreach
-	#tryinclude <foreach>
+	#include <foreach>
 #endif
 
 #if defined _INC_OXYGEN
@@ -143,7 +143,8 @@ public OnFilterScriptInit()
 		)
 #endif
 	{
-		OxygenInit(i);
+		if (IsPlayerConnected(i))
+			OxygenInit(i);
 	}
 
 	SetTimer(s_timer_name, 200, true);
@@ -175,7 +176,8 @@ public OnGameModeInit()
 		)
 #endif
 	{
-		OxygenInit(i);
+		if (IsPlayerConnected(i))
+			OxygenInit(i);
 	}
 
 	SetTimer(s_timer_name, 200, true);

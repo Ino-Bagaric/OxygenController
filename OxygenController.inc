@@ -47,7 +47,7 @@
 
 #include <a_samp>
 
-#if defined _foreach && !defined foreach
+#if defined _foreach
 	#tryinclude <foreach>
 	#if !defined foreach
 		#undef _foreach
@@ -289,7 +289,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerUpdate(playerid)
 {
-	if (0 == s_callin[playerid])
+	if (0 == _:s_callin[playerid])
 	{
 		if (IsPlayerInWater(playerid))
 		{
@@ -301,7 +301,7 @@ public OnPlayerUpdate(playerid)
 		}
 	}
 
-	if (0 == s_callun[playerid])
+	if (0 == _:s_callun[playerid])
 	{
 		if (IsPlayerUnderWater(playerid))
 		{
@@ -313,9 +313,9 @@ public OnPlayerUpdate(playerid)
 		}
 	}
 
-	if (0 == s_callout[playerid])
+	if (0 == _:s_callout[playerid])
 	{
-		if (0 == IsPlayerUnderWater(playerid) && 0 == IsPlayerInWater(playerid))
+		if (0 == _:IsPlayerUnderWater(playerid) && 0 == _:IsPlayerInWater(playerid))
 		{
 		#if defined OnPlayerOutFromWater
 			CallLocalFunction(!"OnPlayerOutFromWater", s_format_i, playerid);
@@ -374,7 +374,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 {
-	if (s_callun[playerid] && 0 == s_empty[playerid])
+	if (s_callun[playerid] && 0 == _:s_empty[playerid])
 	{
 		if (issuerid != INVALID_PLAYER_ID)
 		{
@@ -386,7 +386,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 		UpdatePlayerHealth(playerid);
 	}
 
-	if (0 == s_empty[playerid] && s_callout[playerid])
+	if (0 == _:s_empty[playerid] && s_callout[playerid])
 	{
 		if (issuerid == INVALID_PLAYER_ID)
 		{
@@ -451,7 +451,7 @@ public _oxygen_timer()
 			s_status[i] = OXYGEN_SPENDING;
 		}
 
-		if (0 == s_callun[i] && GetPlayerProgressBarValue(i, s_bar[i]) < GetPlayerProgressBarMaxValue(i, s_bar[i]))
+		if (0 == _:s_callun[i] && GetPlayerProgressBarValue(i, s_bar[i]) < GetPlayerProgressBarMaxValue(i, s_bar[i]))
 		{
 			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i])+0.40));
 			PlayerTextDrawShow(i, s_barbcg[i]);
@@ -467,7 +467,7 @@ public _oxygen_timer()
 
 		if (GetPlayerProgressBarValue(i, s_bar[i]) <= 0.00)
 		{
-			if (0 == s_death[i])
+			if (0 == _:s_death[i])
 			{
 				s_empty[i] = true;
 				SetPlayerHealth(i, 0.0);
@@ -576,7 +576,7 @@ static UpdatePlayerHealth(playerid)
 		SetPlayerProgressBarValue(playerid, s_hpbar[playerid], s_hp[playerid]);
 	}
 	
-	if (0 == s_empty[playerid])
+	if (0 == _:s_empty[playerid])
 	{
 		SetPlayerProgressBarValue(playerid, s_hpbar[playerid], s_hp[playerid]);
 	}
@@ -592,7 +592,7 @@ static UpdatePlayerHealth(playerid)
 static UpdatePlayerSyncData(playerid)
 {
 	// Currently re-sending onfoot data is only supported
-	if (0 == IsPlayerConnected(playerid) || GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) {
+	if (0 == _:IsPlayerConnected(playerid) || GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) {
 		return;
 	}
 

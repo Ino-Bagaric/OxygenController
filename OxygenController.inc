@@ -47,13 +47,6 @@
 
 #include <a_samp>
 
-#if defined _foreach
-	#tryinclude <foreach>
-	#if !defined foreach
-		#undef _foreach
-	#endif
-#endif
-
 #if defined _INC_OXYGEN
 	#endinput
 #endif
@@ -133,9 +126,6 @@ forward OnPlayerOutFromWater(playerid);
 // Hooked Callbacks
 public OnFilterScriptInit()
 {
-#if defined _foreach
-	foreach (new i: Player)
-#else
 	for(
 		new i
 	#if defined GetPlayerPoolSize
@@ -145,7 +135,6 @@ public OnFilterScriptInit()
 	#endif
 		; --i != -1;
 		)
-#endif
 	{
 		if (IsPlayerConnected(i))
 			OxygenInit(i);
@@ -166,9 +155,6 @@ public OnFilterScriptInit()
 
 public OnGameModeInit()
 {
-#if defined _foreach
-	foreach (new i: Player)
-#else
 	for(
 		new i
 	#if defined GetPlayerPoolSize
@@ -178,7 +164,6 @@ public OnGameModeInit()
 	#endif
 		; --i != -1;
 		)
-#endif
 	{
 		if (IsPlayerConnected(i))
 			OxygenInit(i);
@@ -199,9 +184,6 @@ public OnGameModeInit()
 
 public OnFilterScriptExit()
 {
-#if defined _foreach
-	foreach (new i: Player)
-#else
 	for(
 		new i
 	#if defined GetPlayerPoolSize
@@ -211,7 +193,6 @@ public OnFilterScriptExit()
 	#endif
 		; --i != -1;
 		)
-#endif
 	{
 		OxygenExit(i);
 	}
@@ -229,9 +210,6 @@ public OnFilterScriptExit()
 
 public OnGameModeExit()
 {
-#if defined _foreach
-	foreach (new i: Player)
-#else
 	for(
 		new i
 	#if defined GetPlayerPoolSize
@@ -241,7 +219,6 @@ public OnGameModeExit()
 	#endif
 		; --i != -1;
 		)
-#endif
 	{
 		OxygenExit(i);
 	}
@@ -430,9 +407,6 @@ stock oc_SetPlayerHealth(playerid, Float:amount)
 forward _oxygen_timer();
 public _oxygen_timer()
 {
-#if defined _foreach
-	foreach (new i: Player)
-#else
 	for(
 		new i
 	#if defined GetPlayerPoolSize
@@ -442,7 +416,6 @@ public _oxygen_timer()
 	#endif
 		; --i != -1;
 		)
-#endif
 	{
 		if (s_callun[i])
 		{
@@ -596,9 +569,6 @@ static UpdatePlayerSyncData(playerid)
 		return;
 	}
 
-#if defined _foreach
-	foreach (new i: Player)
-#else
 	for(
 		new i
 	#if defined GetPlayerPoolSize
@@ -608,7 +578,6 @@ static UpdatePlayerSyncData(playerid)
 	#endif
 		; --i != -1;
 		)
-#endif
 	{
 		if (i != playerid && IsPlayerConnected(i) && IsPlayerStreamedIn(playerid, i)) {
 			SendLastSyncData(playerid, i);

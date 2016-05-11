@@ -6,14 +6,18 @@
 	
 	***** -> Created by <- *****
 		Ino
+
 	***** -> Credits <- *****	
 		ColAndreas Team			(ColAndreas plugin)
 		Slice  					(SKY plugin)
 		Toribio / Southclaw 	(Progress Bar include)
+
 	***** -> Version <- ***** 	
-		v1.1 - beta
+		v2.0
+
 	***** -> Build <- *****		
-		3
+		5
+
 	***** -> Released  Date <- ***** 		
 			   02/05/2016
 			
@@ -23,6 +27,13 @@
 		* -> v1.1
 		     Fixed bugs with health bar
 		     Support last CA version
+		* -> v2.0
+		     Out of beta
+			 Fixed bugs about health
+			 Fixed bugs about player death
+			 Added new function: GetPlayerDepth(playerid), which returning Float value
+			 Stable Version
+
 	***** -> Callbacks <- *****
 		OnPlayerEnterInWater(playerid);
 		OnPlayerEnterUnderWater(playerid);
@@ -37,8 +48,9 @@
 		GetPlayerMaxOxygenValue(playerid);
 		GivePlayerOxygenValue(playerid, Float:Value);
 		GetPlayerOxygenStatus(playerid);
+		GetPlayerDepth(playerid);
+
 	***** -> Status Definitions <- *****
-			
 		OXYGEN_NONE
 		OXYGEN_SPENDING
 		OXYGEN_REFILL
@@ -85,13 +97,19 @@
 #define MAX_OXYGEN      (5000.00)
 #define MIN_OXYGEN      (100.00)
 
+// Script
+#define OXYGEN_NAME 	("Oxygen Controller")
+#define OXYGEN_VERSION 	(1.2)
+#define OXYGEN_UPDATE 	("11/05/2016")
+#define OXYGEN_BUILD 	(0005)
+
 // Defined status
 #define OXYGEN_NONE     (0000)
 #define OXYGEN_SPENDING (0001)
 #define OXYGEN_REFILL   (0002)
 
 // Debug (in progress)
-//#define PRINT_DEBUG
+//#define OXYGEN_DEBUG
 
 // Variables
 
@@ -113,12 +131,14 @@ static
 	bool:s_callout[MAX_PLAYERS],
 	bool:s_death[MAX_PLAYERS];
 
-static s_status[MAX_PLAYERS];
+static 
+	s_status[MAX_PLAYERS];
 
 static
 	s_timer_name[] = !"_oxygen_timer",
 	s_format_i[] = !"i",
-	s_td_msg[] = "_";
+	s_td_msg[] = "_",
+	s_count;
 
 
 // Callbacks
@@ -130,6 +150,7 @@ forward OnPlayerOutFromWater(playerid);
 // Hooked Callbacks
 public OnFilterScriptInit()
 {
+s_count = GetTickCount();
 #if defined _foreach
 	foreach (new i: Player)
 #else
@@ -150,7 +171,8 @@ public OnFilterScriptInit()
 
 	SetTimer(s_timer_name, 200, true);
 
-	print(!"loaded from filterscript");
+	print(!"[Oxygen Controller] Successfully loaded from filterscript.");
+	PrintInfo();
 
 	#if defined oc_OnFilterScriptInit
 		return oc_OnFilterScriptInit();
@@ -163,6 +185,7 @@ public OnFilterScriptInit()
 
 public OnGameModeInit()
 {
+s_count = GetTickCount();
 #if defined _foreach
 	foreach (new i: Player)
 #else
@@ -183,7 +206,8 @@ public OnGameModeInit()
 
 	SetTimer(s_timer_name, 200, true);
 
-	print(!"loaded from gamemode");
+	print(!"[Oxygen Controller] Successfully loaded from gamemode.");
+	PrintInfo();
 
 	#if defined oc_OnGameModeInit
 		return oc_OnGameModeInit();
@@ -213,7 +237,7 @@ public OnFilterScriptExit()
 		OxygenExit(i);
 	}
 
-	print(!"unloaded from filterscript");
+	print(!"[Oxygen Controller] Successfully unloaded from filterscript.");
 
 	#if defined oc_OnFilterScriptExit
 		return oc_OnFilterScriptExit();
@@ -243,7 +267,7 @@ public OnGameModeExit()
 		OxygenExit(i);
 	}
 
-	print(!"unloaded from gamemode");
+	print(!"[Oxygen Controller] Successfully unloaded from gamemode.");
 
 	#if defined oc_OnGameModeExit
 		return oc_OnGameModeExit();
@@ -337,15 +361,13 @@ public OnPlayerSpawn(playerid)
 	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
+	s_empty[playerid] = s_death[playerid] = false;
 	UpdatePlayerHealth(playerid);
 
 	SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], s_max[playerid]);
 	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
 	HidePlayerProgressBar(playerid, s_bar[playerid]);
 	s_status[playerid] = OXYGEN_NONE;
-
-	s_empty[playerid] = s_death[playerid] = false;
-
 
 	#if defined oc_OnPlayerSpawn
 		return oc_OnPlayerSpawn(playerid);
@@ -359,7 +381,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 {
 	s_hp[playerid] = 0.0;
 	UpdatePlayerHealth(playerid);
-	s_death[playerid] = true;
+	s_death[playerid] = s_empty[playerid] = true;
+	UpdatePlayerHealth(playerid);
 
 	#if defined oc_OnPlayerDeath
 		return oc_OnPlayerDeath(playerid, killerid, reason);
@@ -443,14 +466,14 @@ public _oxygen_timer()
 	{
 		if (s_callun[i])
 		{
-			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i])-0.50));
+			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i]) - (0.514932283)));
 			PlayerTextDrawShow(i, s_barbcg[i]);
 			s_status[i] = OXYGEN_SPENDING;
 		}
 
 		if (0 == _:s_callun[i] && GetPlayerProgressBarValue(i, s_bar[i]) < GetPlayerProgressBarMaxValue(i, s_bar[i]))
 		{
-			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i])+0.40));
+			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i]) + (0.394736883)));
 			PlayerTextDrawShow(i, s_barbcg[i]);
 			s_status[i] = OXYGEN_REFILL;
 		}
@@ -543,9 +566,9 @@ static OxygenInit(playerid)
 	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
-	UpdatePlayerHealth(playerid);
-
 	s_empty[playerid] = false;
+	UpdatePlayerHealth(playerid);
+	
 	SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], s_max[playerid]);
 	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
 	HidePlayerProgressBar(playerid, s_bar[playerid]);
@@ -559,6 +582,31 @@ static OxygenExit(playerid)
 	PlayerTextDrawDestroy(playerid, s_barbcg[playerid]);
 	DestroyPlayerProgressBar(playerid, s_hpbar[playerid]);
 	DestroyPlayerProgressBar(playerid, s_bar[playerid]);
+	return (true);
+}
+
+static PrintInfo()
+{
+	print (" -------------------------------------");
+	printf("           %s", OXYGEN_NAME);
+	print (" -------------------------------------");
+	printf("\n             Version: %.1f", OXYGEN_VERSION);
+	printf("\n               Build: %d", OXYGEN_BUILD);
+	printf("\n       Last Update: %s", OXYGEN_UPDATE);
+	#if defined OXYGEN_DEBUG
+	print ("\n          Print Debug: TRUE");
+	#else
+	print ("\n          Print Debug: FALSE");
+	#endif
+	#if defined _foreach
+	print ("\n          Use Foreach: TRUE");
+	#else
+	print ("\n          Use Foreach: FALSE");
+	#endif
+	printf("\n            Loaded in: %dms", GetTickCount() - s_count);
+	print ("\n -------------------------------------");
+	printf("     (c) 2016 Ivan 'Ino' Bagaric");
+	print (" -------------------------------------");
 	return (true);
 }
 
@@ -720,6 +768,18 @@ stock GetPlayerOxygenStatus(playerid)
 	return s_status[playerid];
 }
 
+stock GetPlayerDepth(playerid)
+{
+	if (0 == _:IsPlayerUnderWater(playerid))
+		return _:(0.0);
+
+	static 
+		Float:z;
+
+	GetPlayerPos(playerid, z, z, z);
+
+	return _:(0.0 - z);
+}
 
 // ALS callbacks
 

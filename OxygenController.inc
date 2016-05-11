@@ -98,10 +98,10 @@
 #define MIN_OXYGEN      (100.00)
 
 // Script
-#define OXYGEN_NAME 	("Oxygen Controller")
-#define OXYGEN_VERSION 	(1.2)
-#define OXYGEN_UPDATE 	("11/05/2016")
-#define OXYGEN_BUILD 	(0005)
+#define OXYGEN_NAME     ("Oxygen Controller")
+#define OXYGEN_VERSION  (2.0)
+#define OXYGEN_UPDATE   ("11/05/2016")
+#define OXYGEN_BUILD    (0005)
 
 // Defined status
 #define OXYGEN_NONE     (0000)
@@ -587,26 +587,26 @@ static OxygenExit(playerid)
 
 static PrintInfo()
 {
-	print (" -------------------------------------");
+	print(!" -------------------------------------");
 	printf("           %s", OXYGEN_NAME);
-	print (" -------------------------------------");
+	print(!" -------------------------------------");
 	printf("\n             Version: %.1f", OXYGEN_VERSION);
 	printf("\n               Build: %d", OXYGEN_BUILD);
 	printf("\n       Last Update: %s", OXYGEN_UPDATE);
 	#if defined OXYGEN_DEBUG
-	print ("\n          Print Debug: TRUE");
+	print(!"\n          Print Debug: TRUE");
 	#else
-	print ("\n          Print Debug: FALSE");
+	print(!"\n          Print Debug: FALSE");
 	#endif
 	#if defined _foreach
-	print ("\n          Use Foreach: TRUE");
+	print(!"\n          Use Foreach: TRUE");
 	#else
-	print ("\n          Use Foreach: FALSE");
+	print(!"\n          Use Foreach: FALSE");
 	#endif
 	printf("\n            Loaded in: %dms", GetTickCount() - s_count);
-	print ("\n -------------------------------------");
+	print(!"\n -------------------------------------");
 	printf("     (c) 2016 Ivan 'Ino' Bagaric");
-	print (" -------------------------------------");
+	print(!" -------------------------------------");
 	return (true);
 }
 

@@ -2,12 +2,13 @@
 
 // if you have include foreach in your include folder, use define _foreach
 //#define _foreach
+//#include <foreach>
+#define OXYGEN_DEBUG
 #include <OxygenController>
 #include <zcmd>
 
 // Variables
 new bool:oxstatus[MAX_PLAYERS];
-
 
 
 // Callbacks
@@ -38,6 +39,7 @@ public OnPlayerOutFromWater(playerid)
 	return (true);
 }
 
+
 // Timer
 forward ostatus();
 public ostatus()
@@ -53,17 +55,17 @@ public ostatus()
 	    	{
 	    		case OXYGEN_NONE:
 	    		{	    			
-	    			format (tdstring, sizeof(tdstring), "~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~oxygen~n~~g~~h~~h~full~n~~w~status: %.2f/%.2f", GetPlayerOxygenValue(i), GetPlayerMaxOxygenValue(i));
+	    			format (tdstring, sizeof(tdstring), "~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~oxygen~n~~g~~h~~h~full~n~~w~status: %.2f/%.2f~n~depth: %.2f", GetPlayerOxygenValue(i), GetPlayerMaxOxygenValue(i), GetPlayerDepth(i));
 	    			GameTextForPlayer(i, tdstring, 1000, 3);
 	    		}
 	    		case OXYGEN_REFILL:
 	    		{
-	    			format (tdstring, sizeof(tdstring), "~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~oxygen~n~~b~~h~~h~refill~n~~w~status: %.2f/%.2f", GetPlayerOxygenValue(i), GetPlayerMaxOxygenValue(i));
+	    			format (tdstring, sizeof(tdstring), "~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~oxygen~n~~b~~h~~h~refill~n~~w~status: %.2f/%.2f~n~depth: %.2f", GetPlayerOxygenValue(i), GetPlayerMaxOxygenValue(i), GetPlayerDepth(i));
 	    			GameTextForPlayer(i, tdstring, 1000, 3);
 	    		}
 	    		case OXYGEN_SPENDING:
 	    		{
-	    			format (tdstring, sizeof(tdstring), "~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~oxygen~n~~r~~h~~h~spending~n~~w~status: %.2f/%.2f", GetPlayerOxygenValue(i), GetPlayerMaxOxygenValue(i));
+	    			format (tdstring, sizeof(tdstring), "~n~ ~n~ ~n~ ~n~ ~n~ ~n~ ~n~oxygen~n~~r~~h~~h~spending~n~~w~status: %.2f/%.2f~n~depth: %.2f", GetPlayerOxygenValue(i), GetPlayerMaxOxygenValue(i), GetPlayerDepth(i));
 	    			GameTextForPlayer(i, tdstring, 1000, 3);
 	    		}
 	    	}

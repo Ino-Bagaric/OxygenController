@@ -26,6 +26,7 @@ SAMP Oxygen Controller
 	- GetPlayerMaxOxygenValue(playerid);
 	- GivePlayerOxygenValue(playerid, Float:Value);
 	- GetPlayerOxygenStatus(playerid);
+	- GetPlayerDepth(playerid);
 
 
 

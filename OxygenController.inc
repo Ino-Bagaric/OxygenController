@@ -98,10 +98,10 @@
 #define MIN_OXYGEN      (100.00)
 
 // Script
-#define OXYGEN_NAME 	("Oxygen Controller")
-#define OXYGEN_VERSION 	(1.2)
-#define OXYGEN_UPDATE 	("11/05/2016")
-#define OXYGEN_BUILD 	(0005)
+#define OXYGEN_NAME     ("Oxygen Controller")
+#define OXYGEN_VERSION  (2.0)
+#define OXYGEN_UPDATE   ("11/05/2016")
+#define OXYGEN_BUILD    (0005)
 
 // Defined status
 #define OXYGEN_NONE     (0000)

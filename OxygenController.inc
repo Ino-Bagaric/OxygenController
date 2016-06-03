@@ -13,10 +13,10 @@
 		Toribio / Southclaw 	(Progress Bar include)
 
 	***** -> Version <- ***** 	
-		v2.0
+		v2.1
 
 	***** -> Build <- *****		
-		5
+		6
 
 	***** -> Released  Date <- ***** 		
 			   02/05/2016
@@ -33,6 +33,10 @@
 			 Fixed bugs about player death
 			 Added new function: GetPlayerDepth(playerid), which returning Float value
 			 Stable Version
+		* -> v2.1
+			 Fixed GetPlayerHealth
+			 Fixed callback OnPlayerTakeDamage
+
 
 	***** -> Callbacks <- *****
 		OnPlayerEnterInWater(playerid);
@@ -98,10 +102,10 @@
 #define MIN_OXYGEN      (100.00)
 
 // Script
-#define OXYGEN_NAME     ("Oxygen Controller")
-#define OXYGEN_VERSION  (2.0)
-#define OXYGEN_UPDATE   ("11/05/2016")
-#define OXYGEN_BUILD    (0005)
+#define OXYGEN_NAME 	("Oxygen Controller")
+#define OXYGEN_VERSION 	(2.1)
+#define OXYGEN_UPDATE 	("03/06/2016")
+#define OXYGEN_BUILD 	(0006)
 
 // Defined status
 #define OXYGEN_NONE     (0000)
@@ -392,7 +396,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 }
 
 
-public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
 {
 	if (s_callun[playerid] && 0 == _:s_empty[playerid])
 	{
@@ -401,7 +405,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 			s_rememberhp[playerid] -= amount;
 		}
 
-		oc_SetPlayerHealth(playerid, 8000000.0);
+		SetPlayerHealth(playerid, 8000000.0);
 		s_hp[playerid] = s_rememberhp[playerid];
 		UpdatePlayerHealth(playerid);
 	}
@@ -422,7 +426,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 	}
 
 	#if defined oc_OnPlayerTakeDamage
-		return oc_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid);
+		return oc_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart);
 	#else
 		return (true);
 	#endif
@@ -587,26 +591,26 @@ static OxygenExit(playerid)
 
 static PrintInfo()
 {
-	print(!" -------------------------------------");
+	print (" -------------------------------------");
 	printf("           %s", OXYGEN_NAME);
-	print(!" -------------------------------------");
+	print (" -------------------------------------");
 	printf("\n             Version: %.1f", OXYGEN_VERSION);
 	printf("\n               Build: %d", OXYGEN_BUILD);
 	printf("\n       Last Update: %s", OXYGEN_UPDATE);
 	#if defined OXYGEN_DEBUG
-	print(!"\n          Print Debug: TRUE");
+	print ("\n          Print Debug: TRUE");
 	#else
-	print(!"\n          Print Debug: FALSE");
+	print ("\n          Print Debug: FALSE");
 	#endif
 	#if defined _foreach
-	print(!"\n          Use Foreach: TRUE");
+	print ("\n          Use Foreach: TRUE");
 	#else
-	print(!"\n          Use Foreach: FALSE");
+	print ("\n          Use Foreach: FALSE");
 	#endif
 	printf("\n            Loaded in: %dms", GetTickCount() - s_count);
-	print(!"\n -------------------------------------");
+	print ("\n -------------------------------------");
 	printf("     (c) 2016 Ivan 'Ino' Bagaric");
-	print(!" -------------------------------------");
+	print (" -------------------------------------");
 	return (true);
 }
 
@@ -928,10 +932,10 @@ stock GetPlayerDepth(playerid)
 
 
 // GetPlayerHealth
-#if defined _ALoc_GetPlayerHealth
+#if defined _ALS_GetPlayerHealth
 		#undef GetPlayerHealth
 #else
-		#define _ALoc_GetPlayerHealth
+		#define _ALS_GetPlayerHealth
 #endif
 #define GetPlayerHealth oc_GetPlayerHealth
 

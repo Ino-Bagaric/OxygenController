@@ -468,6 +468,9 @@ public _oxygen_timer()
 		)
 #endif
 	{
+		if (!IsPlayerConnected(i))
+			continue;
+		
 		if (s_callun[i])
 		{
 			SetPlayerProgressBarValue(i, s_bar[i], (GetPlayerProgressBarValue(i, s_bar[i]) - (0.514932283)));

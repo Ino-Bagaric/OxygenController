@@ -10,14 +10,13 @@
 	***** -> Credits <- *****	
 		ColAndreas Team			(ColAndreas plugin)
 		Slice  					(SKY plugin)
-		Toribio / Southclaw 	(Progress Bar include)
-		Zile42O					(Update compatible weapon-config.inc)
+		Toribio / Southclaw 	(Progress Bar include)	
 
 	***** -> Version <- ***** 	
 		v2.2
 
 	***** -> Build <- *****		
-		7
+		8
 
 	***** -> Released  Date <- ***** 		
 			   02/05/2016
@@ -150,9 +149,7 @@ static
 static
 	s_timer_name[] = !"_oxygen_timer",
 	s_format_i[] = !"i",
-	#if !defined _INC_WEAPON_CONFIG
 	s_td_msg[] = "_",
-	#endif
 	s_count;
 
 

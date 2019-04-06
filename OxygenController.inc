@@ -553,9 +553,8 @@ public _oxygen_timer()
 			{
 				s_empty[i] = true;
 				SetPlayerHealth(i, 0.0);
-				#if !defined _INC_WEAPON_CONFIG
 				UpdatePlayerHealth(i);
-				#endif
+				
 			}
 		}
 		else

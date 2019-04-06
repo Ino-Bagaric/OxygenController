@@ -10,13 +10,13 @@
 	***** -> Credits <- *****	
 		ColAndreas Team			(ColAndreas plugin)
 		Slice  					(SKY plugin)
-		Toribio / Southclaw 	(Progress Bar include)
+		Toribio / Southclaw 	(Progress Bar include)		
 
 	***** -> Version <- ***** 	
-		v2.1
+		v2.2
 
 	***** -> Build <- *****		
-		6
+		7
 
 	***** -> Released  Date <- ***** 		
 			   02/05/2016
@@ -36,6 +36,8 @@
 		* -> v2.1
 			 Fixed GetPlayerHealth
 			 Fixed callback OnPlayerTakeDamage
+		* -> 2.2
+			 Fixed compatible with weapon-config
 
 
 	***** -> Callbacks <- *****
@@ -88,6 +90,7 @@
 	#endif
 #endif
 
+
 #if !defined _progress2_included
 	#tryinclude <progress2>
 
@@ -97,14 +100,15 @@
 #endif
 
 
+
 // Defines
 #define MAX_OXYGEN      (5000.00)
 #define MIN_OXYGEN      (100.00)
 
 // Script
 #define OXYGEN_NAME 	("Oxygen Controller")
-#define OXYGEN_VERSION 	(2.1)
-#define OXYGEN_UPDATE 	("03/06/2016")
+#define OXYGEN_VERSION 	(2.2)
+#define OXYGEN_UPDATE 	("06/04/2019")
 #define OXYGEN_BUILD 	(0006)
 
 // Defined status
@@ -119,8 +123,12 @@
 
 // Textdraws
 static 
+#if !defined _INC_WEAPON_CONFIG
+
 	PlayerBar:s_hpbar[MAX_PLAYERS],
 	PlayerText:s_hpbcg[MAX_PLAYERS],
+
+#endif
 	PlayerBar:s_bar[MAX_PLAYERS],
 	PlayerText:s_barbcg[MAX_PLAYERS];
 
@@ -141,7 +149,9 @@ static
 static
 	s_timer_name[] = !"_oxygen_timer",
 	s_format_i[] = !"i",
+	#if !defined _INC_WEAPON_CONFIG
 	s_td_msg[] = "_",
+	#endif
 	s_count;
 
 
@@ -361,10 +371,13 @@ public OnPlayerUpdate(playerid)
 
 public OnPlayerSpawn(playerid)
 {
+	#if !defined _INC_WEAPON_CONFIG
 	SetPlayerHealth(playerid, 800000.0);
-	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
-	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
+	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);	
+	#endif
+
+	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
 	s_empty[playerid] = s_death[playerid] = false;
 	UpdatePlayerHealth(playerid);
 
@@ -383,11 +396,12 @@ public OnPlayerSpawn(playerid)
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
-	s_hp[playerid] = 0.0;
-	UpdatePlayerHealth(playerid);
 	s_death[playerid] = s_empty[playerid] = true;
-	UpdatePlayerHealth(playerid);
+	s_hp[playerid] = 0.0;	
+	UpdatePlayerHealth(playerid);	
 
+
+	
 	#if defined oc_OnPlayerDeath
 		return oc_OnPlayerDeath(playerid, killerid, reason);
 	#else
@@ -395,7 +409,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	#endif
 }
 
-
+#if !defined _INC_WEAPON_CONFIG
 public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
 {
 	if (s_callun[playerid] && 0 == _:s_empty[playerid])
@@ -431,24 +445,65 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
 		return (true);
 	#endif
 }
+#else
 
+public OnPlayerDamage(&playerid, &Float:amount, &issuerid, &weapon, &bodypart)
+{
+	if (s_callun[playerid] && 0 == _:s_empty[playerid])
+	{
+		if (issuerid != INVALID_PLAYER_ID)
+		{
+			s_rememberhp[playerid] -= amount;
+		}
+
+		SetPlayerHealth(playerid, 8000000.0);
+		s_hp[playerid] = s_rememberhp[playerid];	
+		UpdatePlayerHealth(playerid);	
+	}
+
+	if (0 == _:s_empty[playerid] && s_callout[playerid])
+	{
+		if (issuerid == INVALID_PLAYER_ID)
+		{
+			s_rememberhp[playerid] -= amount;
+			s_hp[playerid] = s_rememberhp[playerid];
+			UpdatePlayerHealth(playerid);			
+		}
+	}
+
+	if (s_callun[playerid] && s_empty[playerid])
+	{
+		SetPlayerHealth(playerid, s_hp[playerid]);
+	}
+	#if defined oc_OnPlayerDamage
+		return oc_OnPlayerDamage(playerid, Float:amount, issuerid, weapon, bodypart);
+	#else
+		return (true);
+	#endif
+}
+
+#endif
 // Hooked Functions
-
+#if !defined _INC_WEAPON_CONFIG
 stock oc_GetPlayerHealth(playerid, &Float:health)
 {
+	
 	health = s_hp[playerid];
+	
 	return (true);
 }
 
 
 stock oc_SetPlayerHealth(playerid, Float:amount)
-{
+{	
+	
 	s_hp[playerid] = amount;
 	UpdatePlayerHealth(playerid);
 	SetPlayerHealth(playerid, amount);
+	
 	return (true);
 }
-
+#endif
 
 // Oxygen Main Timer
 forward _oxygen_timer();
@@ -498,7 +553,9 @@ public _oxygen_timer()
 			{
 				s_empty[i] = true;
 				SetPlayerHealth(i, 0.0);
+				#if !defined _INC_WEAPON_CONFIG
 				UpdatePlayerHealth(i);
+				#endif
 			}
 		}
 		else
@@ -515,6 +572,7 @@ public _oxygen_timer()
 
 static OxygenInit(playerid)
 {
+	#if !defined _INC_WEAPON_CONFIG
 	s_barbcg[playerid] = CreatePlayerTextDraw(playerid,609.000000, 58.000000, s_td_msg);
 	PlayerTextDrawBackgroundColor(playerid,s_barbcg[playerid], 255);
 	PlayerTextDrawFont(playerid,s_barbcg[playerid], 1);
@@ -543,6 +601,7 @@ static OxygenInit(playerid)
 
 
 	DestroyPlayerProgressBar(playerid, s_hpbar[playerid]);
+	#endif
 	DestroyPlayerProgressBar(playerid, s_bar[playerid]);
 
 
@@ -551,30 +610,33 @@ static OxygenInit(playerid)
 	s_max[playerid] = 100.0;
 	PlayerTextDrawHide(playerid, s_barbcg[playerid]);
 
-
+	#if !defined _INC_WEAPON_CONFIG
 	s_hpbar[playerid] = CreatePlayerProgressBar(playerid, 548.50, 68.55, 61.00, 4.80, 3021544959, 100.0, BAR_DIRECTION_RIGHT);
 	SetPlayerProgressBarValue(playerid, s_hpbar[playerid], 100.0);
 	PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
-
+	#endif
 
 	s_callout[playerid] = true;
 	s_callin[playerid] = s_callun[playerid] = false;
 
+	#if !defined _INC_WEAPON_CONFIG
 	HidePlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
+	#endif
 
 	HidePlayerProgressBar(playerid, s_bar[playerid]);
 	PlayerTextDrawHide(playerid, s_barbcg[playerid]);
 
 
 	//
-
+	#if !defined _INC_WEAPON_CONFIG
 	SetPlayerHealth(playerid, 800000.0);
-	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
 	ShowPlayerProgressBar(playerid, s_hpbar[playerid]);
 	PlayerTextDrawShow(playerid, s_hpbcg[playerid]);
-	s_empty[playerid] = false;
 	UpdatePlayerHealth(playerid);
+	#endif
+	s_hp[playerid] = s_rememberhp[playerid] = 100.0;
+	s_empty[playerid] = false;
 	
 	SetPlayerProgressBarMaxValue(playerid, s_bar[playerid], s_max[playerid]);
 	SetPlayerProgressBarValue(playerid, s_bar[playerid], s_max[playerid]);
@@ -585,9 +647,12 @@ static OxygenInit(playerid)
 
 static OxygenExit(playerid)
 {
+	#if !defined _INC_WEAPON_CONFIG
 	PlayerTextDrawDestroy(playerid, s_hpbcg[playerid]);
-	PlayerTextDrawDestroy(playerid, s_barbcg[playerid]);
 	DestroyPlayerProgressBar(playerid, s_hpbar[playerid]);
+	#endif
+
+	PlayerTextDrawDestroy(playerid, s_barbcg[playerid]);	
 	DestroyPlayerProgressBar(playerid, s_bar[playerid]);
 	return (true);
 }
@@ -610,6 +675,11 @@ static PrintInfo()
 	#else
 	print ("\n          Use Foreach: FALSE");
 	#endif
+	#if defined _INC_WEAPON_CONFIG
+	print ("\n          Use Weapon Config: TRUE");
+	#else 
+	print ("\n          Use Weapon Config: FALSE");
+	#endif
 	printf("\n            Loaded in: %dms", GetTickCount() - s_count);
 	print ("\n -------------------------------------");
 	printf("     (c) 2016 Ivan 'Ino' Bagaric");
@@ -625,22 +695,26 @@ static UpdatePlayerHealth(playerid)
 	if (s_hp[playerid] <= 0.0)
 	{
 		SetPlayerHealth(playerid, 0.0);
+		#if !defined _INC_WEAPON_CONFIG
 		SetPlayerProgressBarValue(playerid, s_hpbar[playerid], s_hp[playerid]);
+		#endif
 	}
-	
+	#if !defined _INC_WEAPON_CONFIG
 	if (0 == _:s_empty[playerid])
-	{
-		SetPlayerProgressBarValue(playerid, s_hpbar[playerid], s_hp[playerid]);
+	{	
+		SetPlayerProgressBarValue(playerid, s_hpbar[playerid], s_hp[playerid]);	
 	}
 	else
-	{
+	{		
 		HidePlayerProgressBar(playerid, s_hpbar[playerid]);
-		PlayerTextDrawHide(playerid, s_hpbcg[playerid]);
+		PlayerTextDrawHide(playerid, s_hpbcg[playerid]);	
 	}
+	#endif
 	return (true);
 }
 
 // by Slice
+
 static UpdatePlayerSyncData(playerid)
 {
 	// Currently re-sending onfoot data is only supported
@@ -666,6 +740,7 @@ static UpdatePlayerSyncData(playerid)
 			SendLastSyncData(playerid, i);
 		}
 	}
+
 }
 
 
@@ -805,6 +880,17 @@ stock GetPlayerDepth(playerid)
 
 
 
+#if defined _ALS_OnPlayerDamage
+	#undef OnPlayerDamage
+#else
+	#define _ALS_OnPlayerDamage
+#endif
+
+#define OnPlayerDamage oc_OnPlayerDamage
+#if defined oc_OnPlayerDamage
+	forward oc_OnPlayerDamage(&playerid, &Float:amount, &issuerid, &weapon, &bodypart);
+#endif
+
 // OnPlayerUpdate
 #if defined _ALS_OnPlayerUpdate
 	#undef OnPlayerUpdate
@@ -935,6 +1021,7 @@ stock GetPlayerDepth(playerid)
 
 
 // GetPlayerHealth
+#if !defined _INC_WEAPON_CONFIG	
 #if defined _ALS_GetPlayerHealth
 		#undef GetPlayerHealth
 #else
@@ -951,3 +1038,4 @@ stock GetPlayerDepth(playerid)
 #define _ALS_SetPlayerHealth
 #endif
 #define SetPlayerHealth oc_SetPlayerHealth
+#endif

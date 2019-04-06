@@ -10,7 +10,8 @@
 	***** -> Credits <- *****	
 		ColAndreas Team			(ColAndreas plugin)
 		Slice  					(SKY plugin)
-		Toribio / Southclaw 	(Progress Bar include)		
+		Toribio / Southclaw 	(Progress Bar include)
+		Zile42O					(Update compatible weapon-config.inc)
 
 	***** -> Version <- ***** 	
 		v2.2
@@ -571,7 +572,7 @@ public _oxygen_timer()
 
 static OxygenInit(playerid)
 {
-	#if !defined _INC_WEAPON_CONFIG
+	
 	s_barbcg[playerid] = CreatePlayerTextDraw(playerid,609.000000, 58.000000, s_td_msg);
 	PlayerTextDrawBackgroundColor(playerid,s_barbcg[playerid], 255);
 	PlayerTextDrawFont(playerid,s_barbcg[playerid], 1);
@@ -584,7 +585,7 @@ static OxygenInit(playerid)
 	PlayerTextDrawBoxColor(playerid,s_barbcg[playerid], 255);
 	PlayerTextDrawTextSize(playerid,s_barbcg[playerid], 544.500000, 1.000000);
 	PlayerTextDrawSetSelectable(playerid,s_barbcg[playerid], 0);
-
+	#if !defined _INC_WEAPON_CONFIG	
 	s_hpbcg[playerid] = CreatePlayerTextDraw(playerid,609.000000, 68.550000, s_td_msg);
 	PlayerTextDrawBackgroundColor(playerid,s_hpbcg[playerid], 255);
 	PlayerTextDrawFont(playerid,s_hpbcg[playerid], 1);
